@@ -1,0 +1,50 @@
+{% extends 'masterpage.html' %}
+{% load static %}
+
+{% block slider %}
+{% endblock %}
+
+
+        {% block content %}
+        <div id="tooplate_main_top"></div>
+        <div id="tooplate_main">
+            <div class="col_w900">
+                
+               
+                
+                <div class="cleaner"></div>
+            </div>
+
+            <div class="col_w900 col_w900_last">
+                <div class="col_w580 float_l">
+                    <div class="con_tit_01">Batch List</div>
+                    <table border="1" align="center">
+                        <tr>
+                            <th>batch id</th>
+                            <th> batch title </th>
+                            <th> batch lime </th>
+                            <th> start date </th>
+                            <th> faculty name</th>
+                        </tr>
+                        {% for i in result %}
+                        <tr>
+                            <td>{{ i.batchid }}</td>
+                            <td> {{ i.batchtitle }} </td>
+                            <td> {{ i.batchtime }}</td>
+                            <td> {{ i.startdate }}</td>
+                            <td> {{ i.facultyname }}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                 
+                </div>
+
+                <div class="col_w280 float_r">
+
+                   
+                    <div class="cleaner"></div>
+                </div>
+            </div>
+            <div class="cleaner"></div>
+        </div> <!-- end of main -->
+        {% endblock %}

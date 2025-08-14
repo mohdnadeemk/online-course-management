@@ -1,0 +1,116 @@
+from django.contrib.auth import logout
+from django.core.files.storage import FileSystemStorage
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import redirect, render
+
+from educationproject.models import mstuser
+
+from . import models
+from .models import batch
+
+
+def sessioncheckadmin_middleware(get_response):
+ def middleware(request):
+    if request.path=='/adminhome/' or request.path=='/adminhome/batchentry/' or  request.path=='/adminhome/courselist1/' or  request.path=='adminhome/batchlist1/' or  request.path=='/adminhome/courseentry/' or  request.path=='/adminhome/studentlist/' :
+
+      if "emailid" not in request.session:  
+            response=redirect('/login/')
+      else:
+            response=get_response(request)
+    else:
+        response=get_response(request)
+    return response
+ return middleware 
+
+
+
+# Create your views here.
+def adminhome(request):
+    #for fetch session ------------------------------------
+    emailid = request.session.get("emailid")
+    role = request.session.get("role")
+
+    # -------------------------------------------
+    return render(request,'adminhome.html',{"emailid":emailid, "role": role})
+
+def courseentry(request):
+    if(request.method=="GET"):
+        return render(request,'courseentry.html',{"msg" : ""})
+    else:
+        coursename = request.POST.get("coursename")
+        duration = request.POST.get("duration")
+        fees = request.POST.get("fees")
+        coursedetails = request.POST.get("coursedetails")
+        # for file uplaoding
+        courseicon = request.FILES["courseicon"]
+        fs = FileSystemStorage()
+        courseimg = fs.save(courseicon.name,courseicon)
+        obj1 = models.course(coursename = coursename,duration=duration,fees=fees,coursedetails=coursedetails,courseicon=courseicon)
+        obj1.save()
+        return render(request,"courseentry.html",{"msg" : "Saved"})
+    
+def courselist1(request):
+    result = models.course.objects.all()
+    return render(request,"courselist1.html",{"result" : result })
+
+def studentlist(request):
+    result = mstuser.objects.filter(role="student")
+    return render(request,"studentlist.html",{"result" : result})
+
+def adminlogout(request):
+    logout(request)
+    return redirect("http://localhost:8000/")
+
+def batchentry(request):
+    if (request.method=="GET"):
+        return render(request,"batchentry.html",{"msg":""})
+    else:
+        batchtitle = request.POST.get("batchtitle")
+        batchtime = request.POST.get("batchtime")
+        startdate = request.POST.get("startdate")
+        facultyname = request.POST.get("facultyname")
+        batchstatus =  1
+        obj = models.batch(batchtitle=batchtitle,batchtime=batchtime,startdate=startdate,facultyname=facultyname,batchstatus=batchstatus)
+
+        obj.save()
+        return render(request,"batchentry.html",{"msg":"Record Saved"})
+
+def batchlist1(request):
+    res = models.batch.objects.filter(batchstatus=1)
+    return render(request,"batchlist1.html",{"res":res})
+
+def edit(request):
+    if(request.method=='GET'):
+        batchid = request.GET['batchid']
+        for i in batch.objects.filter(batchid=batchid):
+            batchtitle = i.batchtitle
+            batchtime = i.batchtime
+            startdate = i.startdate
+            facultyname = i.facultyname
+        return render(request,'editbatch.html',{'batchtitle':batchtitle,'batchtime':batchtime,'startdate':startdate,'facultyname':facultyname})
+
+def editcourse(request):
+    if request.method=="GET":
+        # for fetch data from query string
+        courseid = request.GET.get("courseid")
+        print("course id:- ",courseid)
+        res = models.course.objects.filter(courseid=courseid)
+        return render(request,"editcourse.html",{"res":res})
+    else:
+        courseid = request.POST.get("courseid")
+        coursename = request.POST.get("coursename")
+        duration = request.POST.get("duration")
+        fees = request.POST.get("fees")
+        coursedetails = request.POST.get("coursedetails")
+        res = models.course.objects.filter(courseid=courseid).update(duration=duration,fees=fees,coursedetails=coursedetails)
+
+        return redirect("/adminhome/courselist1/")
+    
+def delete_course(request, courseid):
+    models.course.objects.filter(courseid=courseid).delete()
+    return redirect('/adminhome/courselist1/')
+
+def delete_student(request, sno):
+    mstuser.objects.filter(sno=sno).delete()
+    return redirect('/adminhome/studentlist/')
+

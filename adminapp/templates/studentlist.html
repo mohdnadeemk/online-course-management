@@ -1,0 +1,86 @@
+{% extends 'masterpage.html' %}
+{% load static %}
+
+{% block slider %}
+{% endblock %}
+
+<div id="tooplate_menu">
+    {% block menu %}
+    <ul>
+        <li><a href="/adminhome/" class="current">Home</a></li>
+        <li><a href="/adminhome/courseentry">Add Courses</a></li>
+        <li><a href="/adminhome/courselist1">Course List</a></li>
+        <li><a href="/adminhome/batchentry/">Add Batches</a></li>
+        <li><a href="/adminhome/studentlist/">Student list</a></li>
+        <li><a href="/adminhome/adminlogout/">Logout</a></li>
+    </ul>
+    {% endblock %}
+    <div class="cleaner"></div>
+</div>
+
+{% block content %}
+<div id="tooplate_main_top"></div>
+<div id="tooplate_main">
+    <div class="col_w900">
+
+
+
+        <div class="cleaner"></div>
+    </div>
+
+    <div class="col_w900 col_w900_last">
+        <div class="col_w580 float_l">
+
+            
+            <div class="con_tit_01" align="center">Student list</div>
+            <table border="1" align="center">
+                <tr>
+                    <th>Sno</th>
+                    <th>Name</th>
+                    <th>Gender</th>
+                    <th>Mobile no.</th>
+                    <th>Address</th>
+                    <th>City</th>
+                    <th>Emailid</th>
+                    <th>Password</th>
+                    <th>Role</th>
+                    <th>Option</th>
+                </tr>
+
+            {% for x in result %}
+            <tr>
+                <td>{{ x.sno }}</td>
+                <td>{{ x.name }}</td>
+                <td>{{ x.gender }}</td>
+                <td>{{ x.mobile }}</td>
+                <td>{{ x.address }}</td>
+                <td>{{ x.city }}</td>
+                <td>{{ x.emailid }}</td>
+                <td>{{ x.pwd }}</td>
+                <td>{{ x.role }}</td>
+                <td><a href="{% url 'delete_student' x.sno %}" onclick="return confirm('Are you sure you want to delete this course?');">Delete</a></td>
+            </tr>
+            {% endfor %}
+            </table>
+            
+        </div>
+
+        <div class="col_w280 float_r">
+
+
+            <div class="cleaner"></div>
+        </div>
+    </div>
+    <div class="cleaner"></div>
+</div> <!-- end of main -->
+{% endblock %}
+
+{% block footer %}
+<div id="tooplate_footer">
+    Copyright © 2048 <a href="#">Universal</a> - Design: nadeem
+</div> <!-- end of footer -->
+{% endblock %}
+</div> <!-- end of wrapper -->
+</body>
+
+</html>
